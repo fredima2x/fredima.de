@@ -55,11 +55,13 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
-        min-height: 100vh;
+        min-height: auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        padding-top: 100px;
+        padding-bottom: 100px;
     }
 
     .logo {
@@ -75,23 +77,22 @@
         animation: glow 3s ease-in-out infinite alternate;
         text-align: center;
         position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        flex-wrap: wrap;
     }
 
     .motd {
-        font-size: clamp(0.6rem, 1.5vw, 1.2rem);
+        font-size: 1.3rem;
         color: #a0a0a0;
-        font-weight: 400;
-        letter-spacing: 0.05em;
+        font-weight: 500;
+        letter-spacing: 0.1em;
         text-transform: none;
         background: none;
         -webkit-text-fill-color: unset;
         animation: motdGlow 3s ease-in-out infinite alternate;
-        opacity: 0.8;
+        opacity: 0.85;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        white-space: nowrap;
     }
 
     @keyframes motdGlow {
@@ -238,6 +239,33 @@
     .delay-1 { animation-delay: 0.2s; }
     .delay-2 { animation-delay: 0.4s; }
     .delay-3 { animation-delay: 0.6s; }
+
+    .footer-text {
+        margin-top: 10rem;
+        max-width: 800px;
+        text-align: center;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #888;
+        min-height: 150px;
+    }
+
+    .word {
+        opacity: 0;
+        animation: wordFadeIn 0.6s ease-in-out forwards;
+    }
+
+    @keyframes wordFadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
 </style>
 
 
@@ -246,10 +274,8 @@
     <div class="background"></div>
     <div class="grid"></div>
 <div class="container">
-    <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem;">
-        <h1 class="logo" style="margin-bottom: 0;">fredima.de</h1>
-        <div class="motd" id="motd"></div>
-    </div>
+    <div class="motd" id="motd"></div>
+    <h1 class="logo">fredima.de</h1>
     <p class="subtitle">Digital Services</p>
     
     <div class="links">
@@ -264,6 +290,90 @@
         </a>
         
     </div>
-</div>
+
+    <div class="footer-text" id="footerText"></div>
+
 </body>
-</html>
+    // Minecraft-style color codes mapping
+    const colorMap = {
+        '§0': '#000000',
+        '§1': '#0000AA',
+        '§2': '#00AA00',
+        '§3': '#00AAAA',
+        '§4': '#AA0000',
+        '§5': '#AA00AA',
+        '§6': '#FFAA00',
+        '§7': '#AAAAAA',
+        '§8': '#555555',
+        '§9': '#5555FF',
+        '§a': '#55FF55',
+        '§b': '#55FFFF',
+        '§c': '#FF5555',
+        '§d': '#FF55FF',
+        '§e': '#FFFF55',
+        '§f': '#FFFFFF'
+    };
+
+    const formatMap = {
+        '§l': 'font-weight: bold;',
+        '§m': 'text-decoration: line-through;',
+        '§n': 'text-decoration: underline;',
+        '§o': 'font-style: italic;'
+    };
+
+    function parseMOTD(motd) {
+        let html = motd;
+        
+        // Apply colors
+        Object.entries(colorMap).forEach(([code, color]) => {
+            html = html.replace(new RegExp(code, 'g'), `<span style="color: ${color}">`);
+        });
+
+        // Apply formats
+        Object.entries(formatMap).forEach(([code, style]) => {
+            html = html.replace(new RegExp(code, 'g'), `<span style="${style}">`);
+        });
+
+        // Close spans
+        const spanCount = (html.match(/<span/g) || []).length;
+        html += '</span>'.repeat(spanCount);
+
+        return html;
+    }
+
+    async function loadAndDisplayMOTD() {
+        try {
+            const response = await fetch('motd.json');
+            const motds = await response.json();
+            const randomMOTD = motds[Math.floor(Math.random() * motds.length)];
+            
+            const motdElement = document.getElementById('motd');
+            motdElement.innerHTML = parseMOTD(randomMOTD);
+        } catch (error) {
+            console.error('Error loading MOTD:', error);
+            document.getElementById('motd').textContent = '✧ welcome ✧';
+        }
+    }
+
+    // Load MOTD when page loads
+    document.addEventListener('DOMContentLoaded', loadAndDisplayMOTD);
+
+    // Animate footer text word by word
+    function animateFooterText() {
+        const footerElement = document.getElementById('footerText');
+        const text = "Welcome to fredima.de – where your digital dreams become reality. We provide fast, reliable hosting and cloud services to power your online presence. Let's build something extraordinary together.";
+        
+        const words = text.split(' ');
+        
+        words.forEach((word, index) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = word + ' ';
+            span.style.animationDelay = (index * 0.1) + 's';
+            footerElement.appendChild(span);
+        });
+    }
+
+    // Animate footer text when page loads
+    document.addEventListener('DOMContentLoaded', animateFooterText);
+</script>
