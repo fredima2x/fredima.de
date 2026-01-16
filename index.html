@@ -291,9 +291,12 @@
         
     </div>
 
-    <div class="footer-text" id="footerText"></div>
+    <div class="footer-text" id="footerText">
+        Welcome to fredima.de – where your digital dreams become reality. We provide fast, reliable hosting and cloud services to power your online presence. Let's build something extraordinary together.
+    </div>
+</div>
 
-</body>
+<script>
     // Minecraft-style color codes mapping
     const colorMap = {
         '§0': '#000000',
@@ -361,8 +364,9 @@
     // Animate footer text word by word
     function animateFooterText() {
         const footerElement = document.getElementById('footerText');
-        const text = "Welcome to fredima.de – where your digital dreams become reality. We provide fast, reliable hosting and cloud services to power your online presence. Let's build something extraordinary together.";
+        const text = footerElement.textContent;
         
+        footerElement.textContent = '';
         const words = text.split(' ');
         
         words.forEach((word, index) => {
@@ -376,4 +380,5 @@
 
     // Animate footer text when page loads
     document.addEventListener('DOMContentLoaded', animateFooterText);
-</script>
+</script></body>
+</html>
